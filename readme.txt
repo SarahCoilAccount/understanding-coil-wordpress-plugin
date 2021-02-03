@@ -1,3 +1,8 @@
+This is my understanding repository for the code - it is full of comments as I work my way through it. 
+The ?? mark things I do not understand
+The !! mark issues that I need discussing or the beginnings of code changes toward dealing with ZenHub issues
+
+
 === Coil Web Monetization ===
 Author URI: https://coil.com
 Plugin URI: https://coil.com
