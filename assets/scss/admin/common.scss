@@ -1,0 +1,104 @@
+.coil {
+	.container {
+		background-color: $white;
+		border: 1px solid $lightgrey;
+		box-shadow: 0 2px 30px $shadow;
+		-webkit-box-shadow: 0 2px 30px $shadow;
+		color: $black;
+		margin: 20px auto 80px;
+		max-width: 692px;
+		text-align: left;
+		width: calc(100% - 20px);
+
+		.content {
+			padding: 40px;
+
+			.logo {
+				text-align: center;
+			}
+
+			h1 {
+				color: #23282d;
+				font-size: 1.7em;
+				font-weight: 700;
+				line-height: 1.48;
+				margin-bottom: 28px;
+				margin-top: 0;
+			}
+
+			p {
+				color: #333;
+				font-size: 16px;
+				font-weight: 400;
+				line-height: 1.6;
+				margin-bottom: 20px;
+			}
+
+			p.submit {
+				margin-bottom: 0;
+			}
+
+			ul {
+				list-style: disc;
+			}
+
+			li {
+				margin-left: 12px;
+			}
+
+			input.wide-input {
+				margin-top: 0.4em;
+				width: 100%;
+			}
+
+			a.button.button-hero,
+			input[type='submit'].button-hero,
+			button.button-hero {
+				font-size: 20px;
+			}
+		}
+	}
+	.plugin-branding {
+		box-sizing: border-box;
+		background-color:white;
+		border-bottom: 1px solid #ccc;
+		text-align: center;
+		font-size: 30px;
+		padding: 20px;
+		margin-bottom: 20px;
+
+		// Style full-width banner.
+		width: calc(100% + 42px); // Full width + margins (admin sidebar & .wrap core class).
+		margin-left: -22px; // Left offset for admin sidebar + .wrap margins.
+		margin-top: -10px; // Offset for .wrap margin-top.
+	}
+
+	.coil-welcome-notice {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: center;
+		margin-top: 20px;
+		margin-bottom: 20px;
+		border-left-width: 1px; // Core notice style override.
+		padding: 20px;
+	}
+
+	.coil-welcome-notice__icon {
+		flex: 0 0 auto;
+		margin-right: 20px;
+	}
+
+	.coil-welcome-notice__content {
+		flex: 1 1 auto;
+
+		h3 {
+			margin-top: 0;
+			margin-bottom: 10px;
+		}
+
+		p {
+			margin-bottom: 0;
+		}
+	}
+}
