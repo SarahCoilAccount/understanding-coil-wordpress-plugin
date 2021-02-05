@@ -15,7 +15,7 @@
 // The root is /home/sarahjanejones/Local Sites/demosite/app/public
 // Exit if accessed directly. Prevents access to your files.
 // ABSPATH is a constant 
-// || is like or but if LHS returns true then the code on RS is not run. 
+// || is like or but if LHS returns true then the code on RHS is not run. 
 defined( 'ABSPATH' ) || exit;
 
 if ( version_compare( PHP_VERSION, '7.1', '<' ) ) {

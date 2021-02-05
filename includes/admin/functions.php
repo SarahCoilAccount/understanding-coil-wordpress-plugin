@@ -196,6 +196,8 @@ function delete_term_monetization_meta( $term_id ) {
  *
  * @return array $links Updated array of action links.
  */
+
+ // Creates a "Settings" link that appears next to the "Deactivate" link on the plugins page itself.
 function add_plugin_action_links( array $links ) : array {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return $links;
