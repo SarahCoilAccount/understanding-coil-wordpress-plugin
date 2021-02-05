@@ -76,6 +76,10 @@ function init_plugin() : void {
 	add_term_edit_save_form_meta_actions();
 
 	// Customizer settings.
+	// Contains the default message content and allows admin users to change this content in the customization menu
+	// The ‘customize_register‘ action hook is used to customize and manipulate the Theme Customization admin screen 
+	// This hook gives you access to the $wp_customize object, which is an instance of the WP_Customize_Manager class. 
+	// It is this class object that controls the Theme Customizer screen - add_setting, add_section_add_control and set_setting
 	add_action( 'customize_register', __NAMESPACE__ . '\Admin\add_customizer_messaging_panel' );
 	add_action( 'customize_register', __NAMESPACE__ . '\Admin\add_customizer_options_panel' );
 	add_action( 'customize_register', __NAMESPACE__ . '\Admin\add_customizer_learn_more_button_settings_panel' );
@@ -88,6 +92,8 @@ function init_plugin() : void {
 
 	// Metaboxes.
 	// I can't even find this load-post.php
+	// Seems like load-post.php is a Wordpres thing Runs when an administration menu page is loaded. 
+	// Administration Menus are the interfaces displayed in WordPress Administration. They allow you to add option pages for your plugin. The Top-level menus are rendered along the left side of the WordPress Administration.
 	add_action( 'load-post.php', __NAMESPACE__ . '\Admin\load_metaboxes' );
 	add_action( 'load-post-new.php', __NAMESPACE__ . '\Admin\load_metaboxes' );
 	// Called in admin/functions.php 
@@ -224,8 +230,12 @@ function load_full_assets() : void {
 			'voluntary_donation'        => Admin\get_customizer_text_field( 'coil_voluntary_donation_message' ),
 			'loading_content'           => Admin\get_customizer_text_field( 'coil_verifying_status_message' ),
 			'partial_gating'            => Admin\get_customizer_text_field( 'coil_partial_gating_message' ),
+			/**!! coil_fully_gated_excerpt_message and coil_partially_gated_excerpt_message seem to be missing here ?? */
 			'learn_more_button_text'    => Admin\get_customizer_text_field( 'coil_learn_more_button_text' ),
 			'learn_more_button_link'    => Admin\get_customizer_text_field( 'coil_learn_more_button_link' ),
+			'full_gating_header'    	=> Admin\get_customizer_text_field('coil_fully_gated_content_heading'),
+			'full_gating_footer'    	=> Admin\get_customizer_text_field('coil_fully_gated_content_footer'),
+			/**Where does this donation bar appear?? */
 			'show_donation_bar'         => get_theme_mod( 'coil_show_donation_bar' ),
 			'post_excerpt'              => get_the_excerpt(),
 			'site_logo'                 => $site_logo,

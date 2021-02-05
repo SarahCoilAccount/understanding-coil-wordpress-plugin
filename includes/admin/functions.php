@@ -41,13 +41,13 @@ function add_metabox() : void {
 	$show_metabox = false;
 
 	if ( ! function_exists( '\use_block_editor_for_post' ) ) {
-		// Show if Gutenberg not active.
+		// $show_metabox = true if Gutenberg not active.
 		$show_metabox = true;
 	} elseif ( ! \use_block_editor_for_post( $GLOBALS['post'] ) ) {
-		// Show if post is NOT using Gutenberg.
+		// $show_metabox = true if post is NOT using Gutenberg.
 		$show_metabox = true;
 	} elseif ( version_compare( $GLOBALS['wp_version'], '5.3', '<' ) ) {
-		// Show if using incompatible version of Gutenberg (`wp.editPost.PluginDocumentSettingPanel`).
+		// $show_metabox = true if using incompatible version of Gutenberg (`wp.editPost.PluginDocumentSettingPanel`).
 		$show_metabox = true;
 	}
 
@@ -325,6 +325,11 @@ function get_customizer_text_field( $field_id, $get_default = false ) : string {
 		'coil_partially_gated_excerpt_message' => __( 'This article is monetized and some content is for Coil Members only.', 'coil-web-monetization' ),
 		'coil_learn_more_button_text'          => __( 'Get Coil to access', 'coil-web-monetization' ),
 		'coil_learn_more_button_link'          => 'https://coil.com/learn-more/',
+		/** !! add extra  message customizations
+		 * "Members Only" box language customization #50 ZenHub
+		*/
+		'coil_fully_gated_content_heading'	=>__('This content is for Coil Members only!'),
+		'coil_fully_gated_content_footer'	=>__('This content is for Coil Members only! Coil requires the use of an extension which your browser might not support. Visit coil.com for more information.'),
 	];
 
 	// Get the field from the customizer.
@@ -363,6 +368,7 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 	// Messaging section.
 	$messaging_section_id = 'coil_customizer_section_messaging';
 
+	// This adds the Messages option in the Customization menu 
 	$wp_customize->add_section(
 		$messaging_section_id,
 		[
@@ -371,9 +377,11 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 		]
 	);
 
+
 	// Partial gating message (textarea 1).
 	$partial_message_id = 'coil_partial_gating_message';
 
+	// This adds a new setting to the database.
 	$wp_customize->add_setting(
 		$partial_message_id,
 		[
@@ -538,6 +546,59 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 			],
 		]
 	);
+
+	 // Fully gated content heading (textarea 7).
+	 $fully_gated_heading_id = 'coil_fully_gated_content_heading';
+
+	 // This adds a new setting to the database.
+	 $wp_customize->add_setting(
+		 $fully_gated_heading_id,
+		 [
+			 'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
+			 'sanitize_callback' => 'wp_filter_nohtml_kses',
+		 ]
+	 );
+ 
+	 // This creates an HTML control that admins can use to change settings. This is also where you choose a section for the control to appear in.
+	 $wp_customize->add_control(
+		 $fully_gated_heading_id,
+		 [
+			 'type'        => 'textarea',
+			 'label'       => __( 'Fully gated content heading', 'coil-web-monetization' ),
+			 'section'     => $messaging_section_id,
+			 'description' => __( 'This message is shown as the heading for the "Fully gated content" message below.' ),
+			 'input_attrs' => [
+				 'placeholder' => get_customizer_text_field( $fully_gated_heading_id, true ),
+			 ],
+		 ]
+	 );
+ 
+	  // Fully gated content footer (textarea 8).
+	  $fully_gated_footer_id = 'coil_fully_gated_content_footer';
+ 
+	  // This adds a new setting to the database.
+	  $wp_customize->add_setting(
+		 $fully_gated_footer_id,
+		  [
+			  'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
+			  'sanitize_callback' => 'wp_filter_nohtml_kses',
+		  ]
+	  );
+  
+	  // This creates an HTML control that admins can use to change settings. This is also where you choose a section for the control to appear in.
+	  $wp_customize->add_control(
+		 $fully_gated_footer_id,
+		  [
+			  'type'        => 'textarea',
+			  'label'       => __( 'Fully gated content footer', 'coil-web-monetization' ),
+			  'section'     => $messaging_section_id,
+			  'description' => __( 'This message is shown as the footer for the "Fully gated content" message above.' ),
+			  'input_attrs' => [
+				  'placeholder' => get_customizer_text_field( $fully_gated_footer_id, true ),
+			  ],
+		  ]
+	  );
+ 
 }
 
 /**

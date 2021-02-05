@@ -13,6 +13,8 @@
 		admin_missing_id_notice = coil_params.admin_missing_id_notice,
 		learn_more_button_text = coil_params.learn_more_button_text,
 		learn_more_button_link = coil_params.learn_more_button_link,
+		full_gating_header = coil_params.full_gating_header,
+		full_gating_footer = coil_params.full_gating_footer,
 		site_logo = coil_params.site_logo,
 		show_donation_bar = Boolean( coil_params.show_donation_bar ); // Cast to boolean - wp_localize_script forces string values.
 
@@ -518,7 +520,7 @@
 						assetScale
 					] );
 				});
-
+				// !! Was there an if here??
 			} else {
 
 				// Update body class to show free content.
