@@ -352,7 +352,7 @@ function print_meta_tag() : void {
 
 	// check if url starts with $
 	// Got an error for being unitialised so I added an if condition to check if the variable has any content in it !!
-	if ( '' !== $payment_pointer_url && $payment_pointer_url[0] === '$' ) { /**Changelog */
+	if ( '' !== $payment_pointer_url && $payment_pointer_url[0] === '$' ) { /**Changelog ALA added condition  '' !== $payment_pointer_url &&  */
 		// replace $ with https://
 		$payment_pointer_url = str_replace( '$', 'https://', $payment_pointer_url );
 		// remove trailing slash
@@ -386,7 +386,7 @@ function get_payment_pointer() : string {
 	$payment_pointer_id = User\maybe_output_user_payment_pointer( $global_payment_pointer_id );
 
 	// If the post is not set for monetising, bail out. 
-	if ( ! Gating\is_content_monetized( get_queried_object_id() ) || empty( $payment_pointer_id ) ) { /**Changelog removed (int) casting from get_queried_object_id() But note that the function already retrieves the ID of the currently queried object and returns it as an integer */
+	if ( ! Gating\is_content_monetized( get_queried_object_id() ) || empty( $payment_pointer_id ) ) { /**Changelog ALA removed (int) casting from get_queried_object_id() But note that the function already retrieves the ID of the currently queried object and returns it as an integer. Not sure then why (int) would do any harm?? */
 		return '';
 	}
 
