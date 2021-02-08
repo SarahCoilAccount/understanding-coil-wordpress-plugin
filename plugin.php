@@ -31,6 +31,7 @@ if ( version_compare( PHP_VERSION, '7.1', '<' ) ) {
 	 * Deactivate the plugin.
 	 */
 	function coil_deactive_self() {
+		//Will deactivate this file. 
 			deactivate_plugins( plugin_basename( __FILE__ ) );
 	}
 
@@ -41,6 +42,7 @@ if ( version_compare( PHP_VERSION, '7.1', '<' ) ) {
 }
 
 // The require_once keyword is used to embed PHP code from another file. If the file is not found, a fatal error is thrown and the program stops. If the file was already included previously, this statement will not include it again.
+// Includes admin, settings, gating, user and the functions.php files all here. 
 require_once __DIR__ . '/includes/admin/functions.php';
 require_once __DIR__ . '/includes/settings/functions.php';
 require_once __DIR__ . '/includes/gating/functions.php';

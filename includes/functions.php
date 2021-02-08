@@ -38,12 +38,12 @@ function init_plugin() : void {
 	add_action( 'enqueue_block_assets', __NAMESPACE__ . '\load_block_frontend_assets' );
 	// In the function call you supply, simply use wp_enqueue_script and wp_enqueue_style to add your functionality to the block editor. Only applicable for the Gutenberg editor. run in the Gutenberg editor context when the editor is ready to receive additional scripts and stylesheets.
 	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\load_block_editor_assets' );
-	// wp_enqueue_scripts is the proper hook to use when enqueuing scripts and styles that are meant to appear on the front end. Despite the name, it is used for enqueuing both scripts and styles.
+	// wp_enqueue_scripts is the proper hook to use when enqueuing scripts and styles that are meant to appear on the front end. Despite the name, it is used for enqueuing both scripts and styles. It doesn't add style to the plugin admin. 
 	add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\load_full_assets' );
 	add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\load_messaging_assets' );
 
 	// Admin-only CSS/JS.
-	// ??
+	// admin_enqueue_scripts loads style to front end AND toall *admin* pages (including the the plugin admin)
 	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\Admin\load_admin_assets' );
 	// admin_body_class - Filters the CSS classes for the body tag in the admin.
 	add_filter( 'admin_body_class', __NAMESPACE__ . '\Admin\add_admin_body_class' );
@@ -295,6 +295,9 @@ function load_messaging_assets() : void {
  * @return void
  */
 function load_plugin_templates() : void {
+	// I believe __FILE__ retrievs the path up to the coil-web-monetization folder
+	// __FILE__ returns value relative to where it is called which is why it is only called inside this file. And once in plugins.php to deactivate the plugin. 
+	// Brings in the messages from templates folder. 
 	require_once plugin_dir_path( __FILE__ ) . '../templates/messages/subscriber-only-message.php';
 	require_once plugin_dir_path( __FILE__ ) . '../templates/messages/split-content-message.php';
 	require_once plugin_dir_path( __FILE__ ) . '../templates/messages/banner-message.php';
