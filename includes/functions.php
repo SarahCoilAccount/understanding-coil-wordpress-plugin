@@ -193,7 +193,7 @@ function load_full_assets() : void {
 		return;
 	}
 
-	// What is the queried object here? When was it queried/ Where was it quried? 
+	// What is the queried object here? When was it queried/ Where was it queried? 
 	if ( ! Gating\is_content_monetized( get_queried_object_id() ) ) {
 		return;
 	}
@@ -208,9 +208,9 @@ function load_full_assets() : void {
 	);
 
 	wp_enqueue_script(
-		'coil-monetization-js',
-		esc_url_raw( plugin_dir_url( __DIR__ ) . 'assets/js/initialize-monetization' . $suffix . '.js' ),
-		[ 'jquery', 'wp-util' ],
+		'coil-monetization-js', // name
+		esc_url_raw( plugin_dir_url( __DIR__ ) . 'assets/js/initialize-monetization' . $suffix . '.js' ), //URL
+		[ 'jquery', 'wp-util' ], // Note that it uses jquery	
 		PLUGIN_VERSION,
 		true
 	);
