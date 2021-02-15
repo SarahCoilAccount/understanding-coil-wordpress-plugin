@@ -12,38 +12,51 @@ use Coil\Admin;
 /**
  * Register post/user meta.
  */
+// coil_monetize_post_statuscoil_monetize_post_status saves gating information stored in each post
+// Every field has a "unique meta key" setting that must be filled. This is automatically created for you when you create the field. 
+// Must be unique - the name is wpum_ followed by the ID
+ // The meta key determines how the field will be stored into the database of your website.
+// The metakey is used to retrieve the saved value from the database and display it. 
+// Used to save this metadata key and value to a databse like MySQL. The meta value is the  is the gating for that post.
+// Called using the init hook
 function register_content_meta() : void {
 
+	// Registers a meta key
 	register_meta(
-		'post',
-		'_coil_monetize_post_status',
-		[
-			'auth_callback' => function() {
+		'post', // object type 
+		'_coil_monetize_post_status', // Meta key to register. Used to get, update, save and delete meta. As well as for display purposes in the HTML
+		[ // args data used to describe the meta key
+			'auth_callback' => function() { // A function or method to call when performing edit_post_meta, add_post_meta, and delete_post_meta capability checks.
 				return current_user_can( 'edit_posts' );
 			},
-			'show_in_rest'  => true,
-			'single'        => true,
-			'type'          => 'string',
+			'show_in_rest'  => true, // Whether data associated with this meta key can be considered public and should be accessible via the REST API. A custom post type must also declare support for custom fields for registered meta to be accessible via REST. 
+			'single'        => true, // meta key has one value per object
+			'type'          => 'string', // The type of data associated with this meta key
 		]
 	);
-}
+} // returns true if the meta key was successfully registered in the global array
 
 /**
  * Register term meta.
  *
  * @return void
  */
+
+ // Registers a meta key for terms - stores gating information assigned to categories and tags. 
+ // Terms are part of custom taxonomies which also include tags and categories. Basically an umbrella term that encompasses categories and taxonomies. It includes a term_id, the taxonomy (e.g. category), if there is a parent (like one category can have children categories) the name of it, the slug etc. 
+ // The names for the different groupings in a taxonomy are called terms. In your database you get a number of tables relating to terms and taxonomy. They are, wp_term, wp_term_relationships, wp_term_taxonomy.
+ // Called using the init hook added in admin/functions.php
 function register_term_meta() {
 	register_meta(
-		'term',
-		'_coil_monetize_term_status',
+		'term', // Taxonomy to register a meta key for. Pass an empty string to register the meta key across all existing taxonomies.
+		'_coil_monetize_term_status', // The meta key to register. Used to get, update, save and delete term meta. As well as for display purposes in the HTML
 		[
-			'auth_callback' => function() {
+			'auth_callback' => function() { // A function or method to call when performing edit_post_meta, add_post_meta, and delete_post_meta capability checks.
 				return current_user_can( 'edit_posts' );
 			},
-			'show_in_rest'  => true,
-			'single'        => true,
-			'type'          => 'string',
+			'show_in_rest'  => true, // Whether data associated with this meta key can be considered public and should be accessible via the REST API. A custom post type must also declare support for custom fields for registered meta to be accessible via REST. 
+			'single'        => true, // meta key has one value per object
+			'type'          => 'string', // The type of data associated with this meta key
 		]
 	);
 }
@@ -94,23 +107,34 @@ function get_valid_gating_types() {
  *
  * @return string The updated post title.
  */
+
+ // Called by a filter hook - the_title
 function maybe_add_padlock_to_title( string $title, int $id ) : string {
 
+	// If the theme isn't coil_title_padlock just return the title as is
 	if ( ! get_theme_mod( 'coil_title_padlock', true ) ) {
 		return $title;
 	}
 
+	// Don't add the padlock if the gating is neither gate_all nor gated_tagged_blocks
 	$status = get_content_gating( $id );
 	if ( $status !== 'gate-all' && $status !== 'gate-tagged-blocks' ) {
 		return $title;
 	}
-
+ 
+	// !! This where we need to change the title being being padlocked if any post is padlocked if we so wish
+	// sprintf_ returns a formatted string returning the padlock next the title
 	$post_title = sprintf(
 		/* translators: %s: Gated post title. */
 		__( '🔒 %s', 'coil-web-monetization' ),
 		$title
 	);
 
+	// apply_filters is a WordPress function taking the tag and value as parameters
+	// It calls the callback functions that have been added to a filter hook - in this case the_title
+	// The apply_filters function craetes a new filter hook when 
+	// The filter hook is coil_maybe_add_padlock_to_title, the value to be filetred is #post_title and $title and $id are adidtional args passed to the callback function 
+	// I don't understand why this isn't simply return $title??
 	return apply_filters( 'coil_maybe_add_padlock_to_title', $post_title, $title, $id );
 }
 
@@ -183,11 +207,11 @@ function maybe_restrict_content( string $content ) : string {
  * Called from admin/functions.php as well as inside this file
  * @param integer $post_id The post to check.
  *
- * @return string Either "no" (default), "no-gating", "gate-all", "gate-tagged-blocks".
+ * @return string Either "no" (default), "no", "no-gating", "gate-all", "gate-tagged-blocks".
  */
 function get_post_gating( int $post_id ) : string {
 
-	$gating = get_post_meta( $post_id, '_coil_monetize_post_status', true );
+	$gating = get_post_meta( $post_id, '_coil_monetize_post_status', true ); // Can get monetization status for any post
 
 	if ( empty( $gating ) ) {
 		$gating = 'default';
@@ -223,6 +247,7 @@ function get_excerpt_gating( int $post_id ) : bool {
  */
 function get_term_gating( $term_id ) {
 
+	// Returns the gating assigned to this category/tag/etc
 	$term_gating = get_term_meta( $term_id, '_coil_monetize_term_status', true );
 
 	if ( empty( $term_gating ) ) {
@@ -384,7 +409,7 @@ function set_post_gating( int $post_id, string $gating_type ) : void {
 		return;
 	}
 
-	// This wil save this metadata key and value to a databse like MySQL
+	// This will save this metadata key and value to a databse like MySQL
 	// post_type = post or page depending, meta_key = _coil_monetize_post_status and it contains a meta_value which is the gating for that post
 	update_post_meta( $post_id, '_coil_monetize_post_status', $gating_type );
 }
@@ -404,6 +429,7 @@ function set_term_gating( int $term_id, string $gating_type ) : void {
 		return;
 	}
 
+	// updates the gating info stored in the category/tag/etc
 	update_term_meta( $term_id, '_coil_monetize_term_status', $gating_type );
 }
 

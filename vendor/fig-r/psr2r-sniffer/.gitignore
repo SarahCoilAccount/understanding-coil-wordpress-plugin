@@ -1,0 +1,7 @@
+/vendor/*
+/phpunit.phar
+.phpunit.result.cache
+/composer.phar
+/composer.lock
+.idea
+clover.xml

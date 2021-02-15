@@ -75,12 +75,12 @@ function add_metabox() : void {
 function render_coil_metabox() : void {
 	global $post;
 
-	// Explicitly use the post gating option to render whatever is saved on this post,
-	// instead of what is saved globally. This is used to output the correct meta box option.
+	// Explicitly use the post gating option to render whatever is saved on this post, instead of what is saved globally. 
+	// This is used to output the correct meta box option.
 	// You can see things like the change of padlock visibility change in real time on the page while you edit it (obviously without making true chnages before you update/publish)
 	$post_gating   = Gating\get_post_gating( absint( $post->ID ) );
 	$use_gutenberg = function_exists( '\use_block_editor_for_post' ) && use_block_editor_for_post( $post );
-	$settings      = Gating\get_monetization_setting_types( true ); // returns an associative array I believe with no, no gating and gate all keys.
+	$settings      = Gating\get_monetization_setting_types( true ); // returns an associative array I believe with no gating and gate all keys.
 
 	if ( $use_gutenberg ) {
 		// This is used if WP < 5.3 (in some cases, without the Gutenberg plugin).
@@ -130,6 +130,7 @@ function render_coil_metabox() : void {
  */
 function maybe_save_post_metabox( int $post_id ) : void {
 
+	// Return immediately if the user doesn't have editing priviledges 
 	if ( ! current_user_can( 'edit_post', $post_id ) || empty( $_REQUEST['coil_metabox_nonce'] ) ) {
 		return;
 	}
@@ -166,6 +167,7 @@ function maybe_save_term_meta( int $term_id ) : void {
 	// Check the nonce.
 	check_admin_referer( 'coil_term_gating_nonce_action', 'term_gating_nonce' );
 
+	// Checks wat gating settings apply to this particula tag / category etc. 
 	$term_gating = sanitize_text_field( $_REQUEST['coil_monetize_term_status'] ?? '' );
 
 	if ( $term_gating ) {
@@ -186,6 +188,7 @@ function delete_term_monetization_meta( $term_id ) {
 	if ( empty( $term_id ) ) {
 		return;
 	}
+	// removes the gating info stored on the term (category/ tag etc) that is specified by this ID
 	delete_term_meta( $term_id, '_coil_monetize_term_status' );
 }
 

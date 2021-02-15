@@ -1,0 +1,29 @@
+language: php
+
+sudo: false
+
+php:
+  - 5.6
+  - 7.3
+  - 7.4snapshot
+
+env:
+  global:
+    - DEFAULT=1
+
+matrix:
+  include:
+    - php: 7.2
+      env: CHECKS=1 DEFAULT=0
+
+  fast_finish: true
+
+before_script:
+  - composer install --prefer-dist --no-interaction
+
+script:
+  - if [[ $CHECKS == 1 ]]; then composer phpstan-setup && composer phpstan ; fi
+  - composer cs-check
+
+notifications:
+  email: false
