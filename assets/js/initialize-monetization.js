@@ -334,7 +334,6 @@
 	 * Init
 	 */
 	$( document ).ready(function () {
-
 		if ( monetizationNotInitialized() ) {
 
 			// Hide content entry area if not default selector.
