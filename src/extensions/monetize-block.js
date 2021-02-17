@@ -161,6 +161,10 @@ const monetizeBlockControls = createHigherOrderComponent( ( BlockEdit ) => {
 		} = attributes;
 
 		// Fetch the post meta.
+		// Post meta data is information about a post that is not part of the actual content. This includes information like post date, author, categories and tags, or custom taxonomies.
+		// Returns a single attribute of the post being edited, preferring the unsaved edit if one exists, but falling back to the attribute for the last known saved state of the post.
+		// In the MySQL database the wp_postmeta table has a meta_key column that can be coil_monetize_status and its meta_value can be e.g. "gate-all"
+
 		const meta = wp.data.select( 'core/editor' ).getEditedPostAttribute( 'meta' );
 
 		// If the block is not supported then don't show the inspector.
@@ -249,7 +253,7 @@ function applyExtraClass( extraProps, blockType, attributes ) {
 }
 
 /**
- * Adds a wrapper class around the block in the editor to identify the monetization status.
+ * Adds a wrapper class around the BLOCK in the editor to identify the monetization status.
  */
 const wrapperClass = createHigherOrderComponent( ( BlockListBlock ) => {
 	return ( props ) => {
@@ -266,6 +270,7 @@ const wrapperClass = createHigherOrderComponent( ( BlockListBlock ) => {
 		} = attributes;
 
 		// Fetch the post meta.
+		// In the MySQL database the wp_postmeta table has a meta_key column that can be coil_monetize_status and its meta_value can be e.g. "gate-all"
 		const meta = wp.data.select( 'core/editor' ).getEditedPostAttribute( 'meta' );
 
 
@@ -274,6 +279,8 @@ const wrapperClass = createHigherOrderComponent( ( BlockListBlock ) => {
 
 		/**ALA Changelog added condition  ! meta || */
 		// I don't know what is going on here yet?? 
+		// the first condition toward allowBlockIdentity to be true is that meta must/can be fale - presumably then if there is not meta at all then allowBlockIdentity is true
+		// If the meta is empty, or monetization status is undefined or monetization status is gate-tagged-blocks then set allowBlockIdentity = true;
 		if ( ! meta || typeof meta._coil_monetize_post_status === 'undefined' || ( typeof meta._coil_monetize_post_status !== 'undefined' && meta._coil_monetize_post_status === 'gate-tagged-blocks' ) ) {
 			allowBlockIdentity = true;
 		} else {
@@ -318,9 +325,9 @@ addFilter(
 );
 
 addFilter(
-	'editor.BlockListBlock',
-	'coil/wrapperClass',
-	wrapperClass
+	'editor.BlockListBlock', //hook name
+	'coil/wrapperClass',// namepspace
+	wrapperClass //callback function
 );
 
 // Post Monetization Fields

@@ -233,10 +233,10 @@ function load_full_assets() : void {
 			/**!! coil_fully_gated_excerpt_message and coil_partially_gated_excerpt_message seem to be missing here ?? */
 			'learn_more_button_text'    => Admin\get_customizer_text_field( 'coil_learn_more_button_text' ),
 			'learn_more_button_link'    => Admin\get_customizer_text_field( 'coil_learn_more_button_link' ),
-			'full_gating_header'    	=> Admin\get_customizer_text_field('coil_fully_gated_content_heading'),
-			'full_gating_footer'    	=> Admin\get_customizer_text_field('coil_fully_gated_content_footer'),
+			'full_gating_header'        => Admin\get_customizer_text_field( 'coil_fully_gated_content_heading' ),
+			'full_gating_footer'        => Admin\get_customizer_text_field( 'coil_fully_gated_content_footer' ),
 			/**Where does this donation bar appear?? */
-			'show_donation_bar'         => get_theme_mod( 'coil_show_donation_bar' ),
+			'show_donation_bar'         => get_theme_mod( 'coil_show_donation_bar', true ),
 			'post_excerpt'              => get_the_excerpt(),
 			'site_logo'                 => $site_logo,
 
@@ -296,8 +296,8 @@ function load_messaging_assets() : void {
  */
 function load_plugin_templates() : void {
 	// I believe __FILE__ retrievs the path up to the coil-web-monetization folder
-	// __FILE__ returns value relative to where it is called which is why it is only called inside this file. And once in plugins.php to deactivate the plugin. 
-	// Brings in the messages from templates folder. 
+	// __FILE__ returns value relative to where it is called which is why it is only called inside this file. And once in plugins.php to deactivate the plugin.
+	// Brings in the messages from templates folder.
 	require_once plugin_dir_path( __FILE__ ) . '../templates/messages/subscriber-only-message.php';
 	require_once plugin_dir_path( __FILE__ ) . '../templates/messages/split-content-message.php';
 	require_once plugin_dir_path( __FILE__ ) . '../templates/messages/banner-message.php';
@@ -310,7 +310,7 @@ function load_plugin_templates() : void {
  *
  * @return array $classes Updated body classes.
  */
-// Manipulating the $classes variable which passed to this callback function from the body_class filter. 
+// Manipulating the $classes variable which passed to this callback function from the body_class filter.
 function add_body_class( $classes ) : array {
 
 	// is_singular - Determines whether the query is for an existing single post of any post type

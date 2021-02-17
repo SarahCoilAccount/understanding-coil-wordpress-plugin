@@ -11,11 +11,11 @@
  * Text Domain: coil-web-monetization
  */
 
-// ABSPATH is the absolute path to the WordPress directory - takes you to the root of you wordpress installation 
+// ABSPATH is the absolute path to the WordPress directory - takes you to the root of you WordPress installation
 // The root is /home/sarahjanejones/Local Sites/demosite/app/public
 // Exit if accessed directly. Prevents access to your files.
-// ABSPATH is a constant 
-// || is like or but if LHS returns true then the code on RHS is not run. 
+// ABSPATH is a constant
+// || is like or but if LHS returns true then the code on RHS is not run.
 defined( 'ABSPATH' ) || exit;
 
 if ( version_compare( PHP_VERSION, '7.1', '<' ) ) {
@@ -31,7 +31,7 @@ if ( version_compare( PHP_VERSION, '7.1', '<' ) ) {
 	 * Deactivate the plugin.
 	 */
 	function coil_deactive_self() {
-		//Will deactivate this file. 
+		//Will deactivate this file.
 			deactivate_plugins( plugin_basename( __FILE__ ) );
 	}
 
@@ -42,7 +42,7 @@ if ( version_compare( PHP_VERSION, '7.1', '<' ) ) {
 }
 
 // The require_once keyword is used to embed PHP code from another file. If the file is not found, a fatal error is thrown and the program stops. If the file was already included previously, this statement will not include it again.
-// Includes admin, settings, gating, user and the functions.php files all here. 
+// Includes admin, settings, gating, user and the functions.php files all here.
 require_once __DIR__ . '/includes/admin/functions.php';
 require_once __DIR__ . '/includes/settings/functions.php';
 require_once __DIR__ . '/includes/gating/functions.php';

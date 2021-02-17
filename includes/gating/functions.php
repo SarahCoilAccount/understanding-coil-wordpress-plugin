@@ -13,23 +13,24 @@ use Coil\Admin;
  * Register post/user meta.
  */
 // coil_monetize_post_statuscoil_monetize_post_status saves gating information stored in each post
-// Every field has a "unique meta key" setting that must be filled. This is automatically created for you when you create the field. 
+// Every field has a "unique meta key" setting that must be filled. This is automatically created for you when you create the field.
 // Must be unique - the name is wpum_ followed by the ID
  // The meta key determines how the field will be stored into the database of your website.
-// The metakey is used to retrieve the saved value from the database and display it. 
+// The metakey is used to retrieve the saved value from the database and display it.
 // Used to save this metadata key and value to a databse like MySQL. The meta value is the  is the gating for that post.
 // Called using the init hook
 function register_content_meta() : void {
 
 	// Registers a meta key
 	register_meta(
-		'post', // object type 
+		'post', // object type
 		'_coil_monetize_post_status', // Meta key to register. Used to get, update, save and delete meta. As well as for display purposes in the HTML
 		[ // args data used to describe the meta key
-			'auth_callback' => function() { // A function or method to call when performing edit_post_meta, add_post_meta, and delete_post_meta capability checks.
+			'auth_callback' => function() {
+				// A function or method to call when performing edit_post_meta, add_post_meta, and delete_post_meta capability checks.
 				return current_user_can( 'edit_posts' );
 			},
-			'show_in_rest'  => true, // Whether data associated with this meta key can be considered public and should be accessible via the REST API. A custom post type must also declare support for custom fields for registered meta to be accessible via REST. 
+			'show_in_rest'  => true, // Whether data associated with this meta key can be considered public and should be accessible via the REST API. A custom post type must also declare support for custom fields for registered meta to be accessible via REST.
 			'single'        => true, // meta key has one value per object
 			'type'          => 'string', // The type of data associated with this meta key
 		]
@@ -42,8 +43,8 @@ function register_content_meta() : void {
  * @return void
  */
 
- // Registers a meta key for terms - stores gating information assigned to categories and tags. 
- // Terms are part of custom taxonomies which also include tags and categories. Basically an umbrella term that encompasses categories and taxonomies. It includes a term_id, the taxonomy (e.g. category), if there is a parent (like one category can have children categories) the name of it, the slug etc. 
+ // Registers a meta key for terms - stores gating information assigned to categories and tags.
+ // Terms are part of custom taxonomies which also include tags and categories. Basically an umbrella term that encompasses categories and taxonomies. It includes a term_id, the taxonomy (e.g. category), if there is a parent (like one category can have children categories) the name of it, the slug etc.
  // The names for the different groupings in a taxonomy are called terms. In your database you get a number of tables relating to terms and taxonomy. They are, wp_term, wp_term_relationships, wp_term_taxonomy.
  // Called using the init hook added in admin/functions.php
 function register_term_meta() {
@@ -51,10 +52,11 @@ function register_term_meta() {
 		'term', // Taxonomy to register a meta key for. Pass an empty string to register the meta key across all existing taxonomies.
 		'_coil_monetize_term_status', // The meta key to register. Used to get, update, save and delete term meta. As well as for display purposes in the HTML
 		[
-			'auth_callback' => function() { // A function or method to call when performing edit_post_meta, add_post_meta, and delete_post_meta capability checks.
+			'auth_callback' => function() {
+				// A function or method to call when performing edit_post_meta, add_post_meta, and delete_post_meta capability checks.
 				return current_user_can( 'edit_posts' );
 			},
-			'show_in_rest'  => true, // Whether data associated with this meta key can be considered public and should be accessible via the REST API. A custom post type must also declare support for custom fields for registered meta to be accessible via REST. 
+			'show_in_rest'  => true, // Whether data associated with this meta key can be considered public and should be accessible via the REST API. A custom post type must also declare support for custom fields for registered meta to be accessible via REST.
 			'single'        => true, // meta key has one value per object
 			'type'          => 'string', // The type of data associated with this meta key
 		]
@@ -76,7 +78,7 @@ function get_monetization_setting_types( $show_default = false ) : array {
 	$settings['no']        = esc_html__( 'No Monetization', 'coil-web-monetization' );
 	$settings['no-gating'] = esc_html__( 'Monetized and Public', 'coil-web-monetization' );
 	$settings['gate-all']  = esc_html__( 'Coil Members Only', 'coil-web-monetization' );
-	// Doesn't include the split content option here. Mentioned in admin/functions - only added to the array if the Gutenberg editor is being used. 
+	// Doesn't include the split content option here. Mentioned in admin/functions - only added to the array if the Gutenberg editor is being used.
 	return $settings;
 }
 
@@ -121,7 +123,7 @@ function maybe_add_padlock_to_title( string $title, int $id ) : string {
 	if ( $status !== 'gate-all' && $status !== 'gate-tagged-blocks' ) {
 		return $title;
 	}
- 
+
 	// !! This where we need to change the title being being padlocked if any post is padlocked if we so wish
 	// sprintf_ returns a formatted string returning the padlock next the title
 	$post_title = sprintf(
@@ -132,8 +134,8 @@ function maybe_add_padlock_to_title( string $title, int $id ) : string {
 
 	// apply_filters is a WordPress function taking the tag and value as parameters
 	// It calls the callback functions that have been added to a filter hook - in this case the_title
-	// The apply_filters function craetes a new filter hook when 
-	// The filter hook is coil_maybe_add_padlock_to_title, the value to be filetred is #post_title and $title and $id are adidtional args passed to the callback function 
+	// The apply_filters function craetes a new filter hook when
+	// The filter hook is coil_maybe_add_padlock_to_title, the value to be filetred is #post_title and $title and $id are adidtional args passed to the callback function
 	// I don't understand why this isn't simply return $title??
 	return apply_filters( 'coil_maybe_add_padlock_to_title', $post_title, $title, $id );
 }
