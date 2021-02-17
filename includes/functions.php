@@ -38,7 +38,7 @@ function init_plugin() : void {
 	add_action( 'enqueue_block_assets', __NAMESPACE__ . '\load_block_frontend_assets' );
 	// In the function call you supply, simply use wp_enqueue_script and wp_enqueue_style to add your functionality to the block editor. Only applicable for the Gutenberg editor. run in the Gutenberg editor context when the editor is ready to receive additional scripts and stylesheets.
 	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\load_block_editor_assets' );
-	// wp_enqueue_scripts is the proper hook to use when enqueuing scripts and styles that are meant to appear on the front end. Despite the name, it is used for enqueuing both scripts and styles. It doesn't add style to the plugin admin. 
+	// wp_enqueue_scripts is the proper hook to use when enqueuing scripts and styles that are meant to appear on the front end. Despite the name, it is used for enqueuing both scripts and styles. It doesn't add style to the plugin admin.
 	add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\load_full_assets' );
 	add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\load_messaging_assets' );
 
@@ -49,7 +49,7 @@ function init_plugin() : void {
 	add_filter( 'admin_body_class', __NAMESPACE__ . '\Admin\add_admin_body_class' );
 
 	// Modify output.
-	// Filters the list of CSS body class names for the current post or page. Updates the $classes variable which is a parameter to the body_class function. 
+	// Filters the list of CSS body class names for the current post or page. Updates the $classes variable which is a parameter to the body_class function.
 	add_filter( 'body_class', __NAMESPACE__ . '\add_body_class' );
 	// the_content - Filters the post content.
 	add_filter( 'the_content', __NAMESPACE__ . '\Gating\maybe_restrict_content' );
@@ -77,8 +77,8 @@ function init_plugin() : void {
 
 	// Customizer settings.
 	// Contains the default message content and allows admin users to change this content in the customization menu
-	// The ‘customize_register‘ action hook is used to customize and manipulate the Theme Customization admin screen 
-	// This hook gives you access to the $wp_customize object, which is an instance of the WP_Customize_Manager class. 
+	// The ‘customize_register‘ action hook is used to customize and manipulate the Theme Customization admin screen
+	// This hook gives you access to the $wp_customize object, which is an instance of the WP_Customize_Manager class.
 	// It is this class object that controls the Theme Customizer screen - add_setting, add_section_add_control and set_setting
 	add_action( 'customize_register', __NAMESPACE__ . '\Admin\add_customizer_messaging_panel' );
 	add_action( 'customize_register', __NAMESPACE__ . '\Admin\add_customizer_options_panel' );
@@ -92,11 +92,11 @@ function init_plugin() : void {
 
 	// Metaboxes.
 	// I can't even find this load-post.php
-	// Seems like load-post.php is a Wordpres thing Runs when an administration menu page is loaded. 
+	// Seems like load-post.php is a WordPress thing Runs when an administration menu page is loaded.
 	// Administration Menus are the interfaces displayed in WordPress Administration. They allow you to add option pages for your plugin. The Top-level menus are rendered along the left side of the WordPress Administration.
 	add_action( 'load-post.php', __NAMESPACE__ . '\Admin\load_metaboxes' );
 	add_action( 'load-post-new.php', __NAMESPACE__ . '\Admin\load_metaboxes' );
-	// Called in admin/functions.php 
+	// Called in admin/functions.php
 	add_action( 'save_post', __NAMESPACE__ . '\Admin\maybe_save_post_metabox' );
 
 	// Modal messaging
@@ -118,7 +118,7 @@ function init_plugin() : void {
 function load_block_frontend_assets() : void {
 
 	// defined — Checks whether a given named constant exists
-	// SCRIPT_DEBUG is a related constant that will force WordPress to use the “dev” versions of core CSS and JavaScript files rather than the minified versions that are normally loaded. 
+	// SCRIPT_DEBUG is a related constant that will force WordPress to use the “dev” versions of core CSS and JavaScript files rather than the minified versions that are normally loaded.
 	$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
 	// Rather then loading the stylesheet in your header.php file, you should load it in using wp_enqueue_style. In order to load your main stylesheet, you can enqueue it in functions.php
@@ -158,8 +158,8 @@ function load_block_editor_assets() : void {
 	);
 
 	// Scripts.
-	// Uses wp_enque_style and script, enque_block_assets only includes the style function. 
-	// Any additional JavaScript files required 
+	// Uses wp_enque_style and script, enque_block_assets only includes the style function.
+	// Any additional JavaScript files required
 	wp_enqueue_script(
 		'coil-editor',
 		esc_url_raw( plugin_dir_url( __DIR__ ) . 'dist/blocks.build.js' ),
@@ -193,7 +193,7 @@ function load_full_assets() : void {
 		return;
 	}
 
-	// What is the queried object here? When was it queried/ Where was it queried? 
+	// What is the queried object here? When was it queried/ Where was it queried?
 	if ( ! Gating\is_content_monetized( get_queried_object_id() ) ) {
 		return;
 	}
@@ -210,7 +210,7 @@ function load_full_assets() : void {
 	wp_enqueue_script(
 		'coil-monetization-js', // name
 		esc_url_raw( plugin_dir_url( __DIR__ ) . 'assets/js/initialize-monetization' . $suffix . '.js' ), //URL
-		[ 'jquery', 'wp-util' ], // Note that it uses jquery	
+		[ 'jquery', 'wp-util' ], // Note that it uses jquery
 		PLUGIN_VERSION,
 		true
 	);
@@ -388,7 +388,7 @@ function get_payment_pointer() : string {
 	// If payment pointer is set on the user, use that instead of the global payment pointer.
 	$payment_pointer_id = User\maybe_output_user_payment_pointer( $global_payment_pointer_id );
 
-	// If the post is not set for monetising, bail out. 
+	// If the post is not set for monetising, bail out.
 	if ( ! Gating\is_content_monetized( get_queried_object_id() ) || empty( $payment_pointer_id ) ) { /**Changelog ALA removed (int) casting from get_queried_object_id() But note that the function already retrieves the ID of the currently queried object and returns it as an integer. Not sure then why (int) would do any harm?? */
 		return '';
 	}

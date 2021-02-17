@@ -75,7 +75,7 @@ function add_metabox() : void {
 function render_coil_metabox() : void {
 	global $post;
 
-	// Explicitly use the post gating option to render whatever is saved on this post, instead of what is saved globally. 
+	// Explicitly use the post gating option to render whatever is saved on this post, instead of what is saved globally.
 	// This is used to output the correct meta box option.
 	// You can see things like the change of padlock visibility change in real time on the page while you edit it (obviously without making true chnages before you update/publish)
 	$post_gating   = Gating\get_post_gating( absint( $post->ID ) );
@@ -85,7 +85,7 @@ function render_coil_metabox() : void {
 	if ( $use_gutenberg ) {
 		// This is used if WP < 5.3 (in some cases, without the Gutenberg plugin).
 		// esc_html__ takes the string to translate and the domain where retrieve translated strings
-		$settings['gate-tagged-blocks'] = esc_html__( 'Split Content', 'coil-web-monetization' ); // An additional key value pair added if the Gutenberg editor is being used. 
+		$settings['gate-tagged-blocks'] = esc_html__( 'Split Content', 'coil-web-monetization' ); // An additional key value pair added if the Gutenberg editor is being used.
 	}
 
 	do_action( 'coil_before_render_metabox', $settings );
@@ -97,7 +97,7 @@ function render_coil_metabox() : void {
 	<fieldset>
 		<legend>
 			<?php
-			// This message is shown inside the page / post editor below the radio buttons to select a gating option. 
+			// This message is shown inside the page / post editor below the radio buttons to select a gating option.
 			if ( $use_gutenberg ) {
 				esc_html_e( 'Set the type of monetization for the article. Note: If "Split Content" selected, you will need to save the article and reload the editor to view the options at block level.', 'coil-web-monetization' );
 			} else {
@@ -130,7 +130,7 @@ function render_coil_metabox() : void {
  */
 function maybe_save_post_metabox( int $post_id ) : void {
 
-	// Return immediately if the user doesn't have editing priviledges 
+	// Return immediately if the user doesn't have editing priviledges
 	if ( ! current_user_can( 'edit_post', $post_id ) || empty( $_REQUEST['coil_metabox_nonce'] ) ) {
 		return;
 	}
@@ -167,7 +167,7 @@ function maybe_save_term_meta( int $term_id ) : void {
 	// Check the nonce.
 	check_admin_referer( 'coil_term_gating_nonce_action', 'term_gating_nonce' );
 
-	// Checks wat gating settings apply to this particula tag / category etc. 
+	// Checks wat gating settings apply to this particula tag / category etc.
 	$term_gating = sanitize_text_field( $_REQUEST['coil_monetize_term_status'] ?? '' );
 
 	if ( $term_gating ) {
