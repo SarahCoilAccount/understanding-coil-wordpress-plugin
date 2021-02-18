@@ -147,6 +147,7 @@ function addAttributes( settings ) {
 const monetizeBlockControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
 
+		// showInspector is required to be true for the block level monetization menu options to appear when creating or editing a post
 		let showInspector = false;
 
 		const {
@@ -244,7 +245,7 @@ function applyExtraClass( extraProps, blockType, attributes ) {
 	}*/
 
 	// Check if object exists for old Gutenberg version compatibility.
-	// Add class only when monetizeBlockDisplay is set and is not always show.
+	// Add class only when monetizeBlockDisplay is set and is not always show. This is applicable when you show to / hide from monetized users.
 	if ( typeof monetizeBlockDisplay !== 'undefined' && monetizeBlockDisplay !== "always-show") {
 		extraProps.className = classnames( extraProps.className, 'coil-' + monetizeBlockDisplay );
 	}
@@ -272,7 +273,6 @@ const wrapperClass = createHigherOrderComponent( ( BlockListBlock ) => {
 		// Fetch the post meta.
 		// In the MySQL database the wp_postmeta table has a meta_key column that can be coil_monetize_status and its meta_value can be e.g. "gate-all"
 		const meta = wp.data.select( 'core/editor' ).getEditedPostAttribute( 'meta' );
-
 
 		//if ( ! meta || typeof meta._coil_monetize_post_status === 'undefined' || 
 		// ( typeof meta._coil_monetize_post_status !== 'undefined' && meta._coil_monetize_post_status === 'gate-tagged-blocks' ) ) {
@@ -380,6 +380,7 @@ const PostMonetizationFields = withDispatch( ( dispatch, props ) => {
 ) ) );
 
 // WP >= 5.3 only - register the panel.
+// Renders the panel for pages and posts with the Coil Web Monetization menu option.
 if ( PluginDocumentSettingPanel ) {
 	registerPlugin( 'coil-document-setting-panel', {
 		render: () => {
