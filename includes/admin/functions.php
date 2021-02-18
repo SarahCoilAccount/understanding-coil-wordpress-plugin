@@ -2,11 +2,6 @@
 declare(strict_types=1);
 /**
  * Coil admin screens and options.
- * This includes options for the customization menu - including rendering the metabox to customize the plugin
- * Adds message, options and learn more button panels to the customization screen
- * Defines default message values
- * Includes the payment pointer ID
- *
  */
 
 namespace Coil\Admin;
@@ -24,11 +19,11 @@ const CUSTOMIZER_PANEL_ID = 'coil_customizer_settings_panel';
 
 /**
  * Customise the environment where we want to show the Coil metabox.
- * The action hook was registered in functions.php
  *
  * @return void
  */
 function load_metaboxes() : void {
+
 	add_action( 'add_meta_boxes', __NAMESPACE__ . '\add_metabox' );
 }
 
@@ -38,16 +33,17 @@ function load_metaboxes() : void {
  * @return void
  */
 function add_metabox() : void {
+
 	$show_metabox = false;
 
 	if ( ! function_exists( '\use_block_editor_for_post' ) ) {
-		// $show_metabox = true if Gutenberg not active.
+		// Show if Gutenberg not active.
 		$show_metabox = true;
 	} elseif ( ! \use_block_editor_for_post( $GLOBALS['post'] ) ) {
-		// $show_metabox = true if post is NOT using Gutenberg.
+		// Show if post is NOT using Gutenberg.
 		$show_metabox = true;
 	} elseif ( version_compare( $GLOBALS['wp_version'], '5.3', '<' ) ) {
-		// $show_metabox = true if using incompatible version of Gutenberg (`wp.editPost.PluginDocumentSettingPanel`).
+		// Show if using incompatible version of Gutenberg (`wp.editPost.PluginDocumentSettingPanel`).
 		$show_metabox = true;
 	}
 
@@ -55,49 +51,45 @@ function add_metabox() : void {
 		return;
 	}
 
-	/**This title appears on the customization page */
 	add_meta_box(
-		'coil', /*ID*/
-		__( 'Coil Web Monetization', 'coil-web-monetization' ), /*Title in correct translation*/
-		__NAMESPACE__ . '\render_coil_metabox', /*callback function */
-		Coil\get_supported_post_types(), /*screen as in slug for post type - by returning supported page types */
-		'side', /*Context - where screen displays */
-		'high' /*High priority in menu */
+		'coil',
+		__( 'Coil Web Monetization', 'coil-web-monetization' ),
+		__NAMESPACE__ . '\render_coil_metabox',
+		Coil\get_supported_post_types(),
+		'side',
+		'high'
 	);
 }
 
 /**
  * Render the Coil metabox.
- * I.e. Custom fields
  *
  * @return void
  */
 function render_coil_metabox() : void {
+
 	global $post;
 
-	// Explicitly use the post gating option to render whatever is saved on this post, instead of what is saved globally.
-	// This is used to output the correct meta box option.
-	// You can see things like the change of padlock visibility change in real time on the page while you edit it (obviously without making true chnages before you update/publish)
+	// Explicitly use the post gating option to render whatever is saved on this post,
+	// instead of what is saved globally. This is used to output the correct meta box option.
 	$post_gating   = Gating\get_post_gating( absint( $post->ID ) );
 	$use_gutenberg = function_exists( '\use_block_editor_for_post' ) && use_block_editor_for_post( $post );
-	$settings      = Gating\get_monetization_setting_types( true ); // returns an associative array I believe with no gating and gate all keys.
+	$settings      = Gating\get_monetization_setting_types( true );
 
 	if ( $use_gutenberg ) {
 		// This is used if WP < 5.3 (in some cases, without the Gutenberg plugin).
-		// esc_html__ takes the string to translate and the domain where retrieve translated strings
-		$settings['gate-tagged-blocks'] = esc_html__( 'Split Content', 'coil-web-monetization' ); // An additional key value pair added if the Gutenberg editor is being used.
+		$settings['gate-tagged-blocks'] = esc_html__( 'Split Content', 'coil-web-monetization' );
 	}
 
-	do_action( 'coil_before_render_metabox', $settings );
 	// The <fieldset> tag is used to group related elements in a form.
 	// The <fieldset> tag draws a box around the related elements.
 	// The <legend> tag defines a caption for the <fieldset> element.
+	do_action( 'coil_before_render_metabox', $settings );
 	?>
 
 	<fieldset>
 		<legend>
 			<?php
-			// This message is shown inside the page / post editor below the radio buttons to select a gating option.
 			if ( $use_gutenberg ) {
 				esc_html_e( 'Set the type of monetization for the article. Note: If "Split Content" selected, you will need to save the article and reload the editor to view the options at block level.', 'coil-web-monetization' );
 			} else {
@@ -118,7 +110,7 @@ function render_coil_metabox() : void {
 	<?php
 	wp_nonce_field( 'coil_metabox_nonce_action', 'coil_metabox_nonce' );
 
-	do_action( 'coil_after_render_metabox' ); // Where is this and when is it called or used??
+	do_action( 'coil_after_render_metabox' );
 }
 
 /**
@@ -130,7 +122,6 @@ function render_coil_metabox() : void {
  */
 function maybe_save_post_metabox( int $post_id ) : void {
 
-	// Return immediately if the user doesn't have editing priviledges
 	if ( ! current_user_can( 'edit_post', $post_id ) || empty( $_REQUEST['coil_metabox_nonce'] ) ) {
 		return;
 	}
@@ -155,19 +146,22 @@ function maybe_save_post_metabox( int $post_id ) : void {
 /**
  * Fires after a term has been updated, but before the term cache has been cleaned.
  *
- * @param int $term_id Term ID.
+ * @param int    $term_id  Term ID.
+ * @param int    $tt_id    Term taxonomy ID.
+ * @param string $taxonomy Taxonomy slug.
+ *
  * @return void
  */
-function maybe_save_term_meta( int $term_id ) : void {
+function maybe_save_term_meta( int $term_id, int $tt_id, $taxonomy ) : void {
 
-	if ( ! current_user_can( 'edit_post', $term_id ) || empty( $_REQUEST['term_gating_nonce'] ) ) {
+	$tax_obj = get_taxonomy( $taxonomy );
+	if ( ! current_user_can( $tax_obj->cap->manage_terms ) || empty( $_REQUEST['term_gating_nonce'] ) ) {
 		return;
 	}
 
 	// Check the nonce.
 	check_admin_referer( 'coil_term_gating_nonce_action', 'term_gating_nonce' );
 
-	// Checks wat gating settings apply to this particula tag / category etc.
 	$term_gating = sanitize_text_field( $_REQUEST['coil_monetize_term_status'] ?? '' );
 
 	if ( $term_gating ) {
@@ -185,10 +179,10 @@ function maybe_save_term_meta( int $term_id ) : void {
  * @return void
  */
 function delete_term_monetization_meta( $term_id ) {
+
 	if ( empty( $term_id ) ) {
 		return;
 	}
-	// removes the gating info stored on the term (category/ tag etc) that is specified by this ID
 	delete_term_meta( $term_id, '_coil_monetize_term_status' );
 }
 
@@ -199,9 +193,8 @@ function delete_term_monetization_meta( $term_id ) {
  *
  * @return array $links Updated array of action links.
  */
-
- // Creates a "Settings" link that appears next to the "Deactivate" link on the plugins page itself.
 function add_plugin_action_links( array $links ) : array {
+
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return $links;
 	}
@@ -241,7 +234,6 @@ function add_plugin_meta_link( array $metadata, string $file ) : array {
  *
  * @return string $classes Updated CSS classes.
  */
-// Can't find any  filter hook that links to this ??
 function add_admin_body_class( string $classes ) : string {
 
 	$screen = get_current_screen();
@@ -319,6 +311,7 @@ function load_admin_assets() : void {
  * @return string
  */
 function get_customizer_text_field( $field_id, $get_default = false ) : string {
+
 	// Set up defaults.
 	$defaults = [
 		'coil_unsupported_message'             => __( 'Check that you\'re using a supported browser, have the Coil extension installed, and are logged in to your Coil account. Need a Coil account?', 'coil-web-monetization' ),
@@ -329,12 +322,7 @@ function get_customizer_text_field( $field_id, $get_default = false ) : string {
 		'coil_fully_gated_excerpt_message'     => __( 'The content in this article is for Coil Members only!', 'coil-web-monetization' ),
 		'coil_partially_gated_excerpt_message' => __( 'This article is monetized and some content is for Coil Members only.', 'coil-web-monetization' ),
 		'coil_learn_more_button_text'          => __( 'Get Coil to access', 'coil-web-monetization' ),
-		'coil_learn_more_button_link'          => 'https://coil.com/learn-more/',
-		/** !! add extra  message customizations
-		 * "Members Only" box language customization #50 ZenHub
-		*/
-		'coil_fully_gated_content_heading'     => __( 'This content is for Coil Members only!', 'coil-web-monetization' ),
-		'coil_fully_gated_content_footer'      => __( 'This content is for Coil Members only! Coil requires the use of an extension which your browser might not support. Visit coil.com for more information.', 'coil-web-monetization' ),
+		'coil_learn_more_button_link'          => 'https://coil.com/',
 	];
 
 	// Get the field from the customizer.
@@ -373,7 +361,6 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 	// Messaging section.
 	$messaging_section_id = 'coil_customizer_section_messaging';
 
-	// This adds the Messages option in the Customization menu
 	$wp_customize->add_section(
 		$messaging_section_id,
 		[
@@ -382,15 +369,38 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 		]
 	);
 
-	// Partial gating message (textarea 1).
+	// Fully gated content message (textarea 1).
+	$fully_gated_content_message_id = 'coil_unsupported_message';
+
+	$wp_customize->add_setting(
+		$fully_gated_content_message_id,
+		[
+			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
+			'sanitize_callback' => 'esc_textarea',
+		]
+	);
+
+	$wp_customize->add_control(
+		$fully_gated_content_message_id,
+		[
+			'type'        => 'textarea',
+			'label'       => __( 'Fully gated content message', 'coil-web-monetization' ),
+			'section'     => $messaging_section_id,
+			'description' => __( 'This message is shown when content is set to be Coil Members Only, and the visitor is using an unsupported browser, has the extension installed incorrectly, is logged out of their Coil account, or doesn\'t have a Coil Membership.', 'coil-web-monetization' ),
+			'input_attrs' => [
+				'placeholder' => get_customizer_text_field( $fully_gated_content_message_id, true ),
+			],
+		]
+	);
+
+	// Partial gating message (textarea 2).
 	$partial_message_id = 'coil_partial_gating_message';
 
-	// This adds a new setting to the database.
 	$wp_customize->add_setting(
-		$partial_message_id, // The id argument is equal to the coil_partial_gating_message key
-		[// The second argument is an array of poperties for the new Setting object.
+		$partial_message_id,
+		[
 			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
+			'sanitize_callback' => 'Coil\filter_customiser_settings',
 		]
 	);
 
@@ -407,14 +417,14 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 		]
 	);
 
-	// Fully gated excerpt message (textarea 2).
+	// Fully gated excerpt message (textarea 3).
 	$fully_gated_excerpt_message_id = 'coil_fully_gated_excerpt_message';
 
 	$wp_customize->add_setting(
 		$fully_gated_excerpt_message_id,
 		[
 			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
+			'sanitize_callback' => 'Coil\filter_customiser_settings',
 		]
 	);
 
@@ -431,14 +441,14 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 		]
 	);
 
-	// Partially gated excerpt message (textarea 3).
+	// Partially gated excerpt message (textarea 4).
 	$partially_gated_excerpt_message_id = 'coil_partially_gated_excerpt_message';
 
 	$wp_customize->add_setting(
 		$partially_gated_excerpt_message_id,
 		[
 			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
+			'sanitize_callback' => 'Coil\filter_customiser_settings',
 		]
 	);
 
@@ -455,14 +465,14 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 		]
 	);
 
-	// Pending message (textarea 4).
+	// Pending message (textarea 5).
 	$pending_message_id = 'coil_verifying_status_message';
 
 	$wp_customize->add_setting(
 		$pending_message_id,
 		[
 			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
+			'sanitize_callback' => 'Coil\filter_customiser_settings',
 		]
 	);
 
@@ -479,14 +489,14 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 		]
 	);
 
-	// Invalid Web Monetization message (textarea 5).
+	// Invalid Web Monetization message (textarea 6).
 	$invalid_web_monetization_message_id = 'coil_unable_to_verify_message';
 
 	$wp_customize->add_setting(
 		$invalid_web_monetization_message_id,
 		[
 			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
+			'sanitize_callback' => 'Coil\filter_customiser_settings',
 		]
 	);
 
@@ -503,14 +513,14 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 		]
 	);
 
-	// Voluntary donation message (textarea 6).
+	// Voluntary donation message (textarea 7).
 	$voluntary_donation_message_id = 'coil_voluntary_donation_message';
 
 	$wp_customize->add_setting(
 		$voluntary_donation_message_id,
 		[
 			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
+			'sanitize_callback' => 'Coil\filter_customiser_settings',
 		]
 	);
 
@@ -526,83 +536,6 @@ function add_customizer_messaging_panel( $wp_customize ) : void {
 			],
 		]
 	);
-
-	// Incorrect browser setup message (textarea 7).
-	$incorrect_browser_setup_message_id = 'coil_unsupported_message';
-
-	$wp_customize->add_setting(
-		$incorrect_browser_setup_message_id,
-		[
-			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
-		]
-	);
-
-	$wp_customize->add_control(
-		$incorrect_browser_setup_message_id,
-		[
-			'type'        => 'textarea',
-			'label'       => __( 'Incorrect browser setup message', 'coil-web-monetization' ),
-			'section'     => $messaging_section_id,
-			'description' => __( 'This message is shown when content is set to be Coil Members Only, and visitor either isn\'t using a supported browser, or doesn\'t have the browser extension installed correctly.', 'coil-web-monetization' ),
-			'input_attrs' => [
-				'placeholder' => get_customizer_text_field( $incorrect_browser_setup_message_id, true ),
-			],
-		]
-	);
-
-	// Fully gated content heading (textarea 7).
-	$fully_gated_heading_id = 'coil_fully_gated_content_heading';
-
-	// This adds a new setting to the database.
-	$wp_customize->add_setting(
-		$fully_gated_heading_id,
-		[
-			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
-		]
-	);
-
-	// This creates an HTML control that admins can use to change settings. This is also where you choose a section for the control to appear in.
-	$wp_customize->add_control(
-		$fully_gated_heading_id,
-		[
-			'type'        => 'textarea',
-			'label'       => __( 'Fully gated content heading', 'coil-web-monetization' ),
-			'section'     => $messaging_section_id,
-			'description' => __( 'This message is shown as the heading for the "Fully gated content" message below.' ),
-			'input_attrs' => [
-				'placeholder' => get_customizer_text_field( $fully_gated_heading_id, true ),
-			],
-		]
-	);
-
-	// Fully gated content footer (textarea 8).
-	$fully_gated_footer_id = 'coil_fully_gated_content_footer';
-
-	// This adds a new setting to the database.
-	$wp_customize->add_setting(
-		$fully_gated_footer_id,
-		[
-			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
-		]
-	);
-
-	// This creates an HTML control that admins can use to change settings. This is also where you choose a section for the control to appear in.
-	$wp_customize->add_control(
-		$fully_gated_footer_id,
-		[
-			'type'        => 'textarea',
-			'label'       => __( 'Fully gated content footer', 'coil-web-monetization' ),
-			'section'     => $messaging_section_id,
-			'description' => __( 'This message is shown as the footer for the "Fully gated content" message above.' ),
-			'input_attrs' => [
-				'placeholder' => get_customizer_text_field( $fully_gated_footer_id, true ),
-			],
-		]
-	);
-
 }
 
 /**
@@ -690,7 +623,7 @@ function add_customizer_learn_more_button_settings_panel( $wp_customize ) : void
 		$button_text_setting_id,
 		[
 			'capability'        => apply_filters( 'coil_settings_capability', 'manage_options' ),
-			'sanitize_callback' => 'wp_filter_nohtml_kses',
+			'sanitize_callback' => 'Coil\filter_customiser_settings',
 		]
 	);
 
@@ -774,6 +707,7 @@ function get_valid_taxonomies() : array {
  * @return string
  */
 function get_global_settings( $setting_id ) {
+
 	$options = get_option( 'coil_global_settings_group', [] );
 
 	switch ( $setting_id ) {

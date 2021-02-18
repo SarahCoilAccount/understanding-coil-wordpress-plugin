@@ -26,13 +26,14 @@ use const Coil\COIL__FILE__;
  *
  * @return void
  */
-// Function linked to admin_menu hook in functions.php
+ // Function linked to admin_menu hook in functions.php
 function register_admin_menu() : void {
+
 	add_menu_page(
-		'Coil Web Monetization', // what the plugin settings page itself is called, esc_html__ will perform a translation if required !! Ajusted heading to match Zenhub issue
+		esc_html__( 'Coil', 'coil-web-monetization' ), // what the plugin settings page itself is called, esc_html__ will perform a translation if required !! Ajusted heading to match Zenhub issue
 		esc_html( _x( 'Coil', 'admin menu name', 'coil-web-monetization' ) ), // what the menu tab is called, esc_html__ will perform a translation if required
 		apply_filters( 'coil_settings_capability', 'manage_options' ), // manage_options is the user role (i.e. the admin)
-		'coil_settings', // appears in the URL - http://localhost:10013/wp-admin/admin.php?page=coil_settings
+		'coil_settings',
 		__NAMESPACE__ . '\render_coil_settings_screen', // Executed to add actual content to the page
 		'data:image/svg+xml;base64,' . base64_encode( '<svg height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="m10 18c4.4183 0 8-3.5817 8-8 0-4.41828-3.5817-8-8-8-4.41828 0-8 3.58172-8 8 0 4.4183 3.58172 8 8 8zm3.1274-5.5636c-.1986-.4734-.4822-.5848-.6997-.5848-.0778 0-.1556.0156-.2045.0253-.0046.0009-.0089.0018-.0129.0026-.0785.0337-.1576.1036-.2553.19-.2791.2466-.7099.6274-1.7113.6824h-.1607c-1.03998 0-2.00434-.5383-2.49598-1.4014-.22691-.4084-.34036-.8632-.34036-1.318 0-.529.15127-1.06731.46327-1.53137.23636-.36197.69963-.94669 1.53163-1.19728.39709-.12066.74691-.16706 1.04944-.16706.9455 0 1.3804.4919 1.3804.85387 0 .1949-.1229.35268-.3593.38053-.0284.00928-.0473.00928-.0756.00928-.0851 0-.1797-.01856-.2553-.06497-.0284-.01856-.0662-.02784-.104-.02784-.2931 0-.6996.50118-.6996.92812 0 .31556.2269.594.8981.594.1121 0 .2309-.0133.3679-.02864.0249-.00279.0504-.00564.0765-.00849.7375-.10209 1.3709-.62184 1.56-1.29937.0284-.08353.0567-.22275.0567-.40837 0-.42694-.1702-1.08591-.9927-1.68919-.5862-.43621-1.2575-.56615-1.8625-.56615-.62404 0-1.1724.13922-1.4844.24131-1.22909.39909-1.92872 1.13231-2.288 1.68919-.46327.69609-.69963 1.50355-.69963 2.31103 0 .6961.17018 1.3829.52 2.0047.74691 1.318 2.19345 2.1347 3.75343 2.1347.0378 0 .078-.0023.1182-.0046s.0804-.0047.1182-.0047c1.0494-.0557 2.8552-.761 2.8552-1.5406 0-.065-.0189-.1393-.0472-.2042z" fill-rule="evenodd" fill="black"/></svg>' )
 	);
@@ -156,6 +157,7 @@ function register_admin_content_settings() {
  * @return array
  */
 function coil_content_settings_posts_validation( $post_content_settings ) : array {
+
 	return array_map(
 		function( $radio_value ) {
 			$valid_choices = array_keys( Gating\get_monetization_setting_types() );
@@ -174,6 +176,7 @@ function coil_content_settings_posts_validation( $post_content_settings ) : arra
  * @return array
  */
 function coil_global_settings_group_validation( $global_settings ) : array {
+
 	if ( ! current_user_can( apply_filters( 'coil_settings_capability', 'manage_options' ) ) ) {
 		return [];
 	}
@@ -198,6 +201,7 @@ function coil_global_settings_group_validation( $global_settings ) : array {
  * @return array
  */
 function coil_content_settings_excerpt_validation( $excerpt_content_settings ) : array {
+
 	return array_map(
 		function( $checkbox_value ) {
 			return ( isset( $checkbox_value ) ) ? true : false;
@@ -214,6 +218,7 @@ function coil_content_settings_excerpt_validation( $excerpt_content_settings ) :
  * @return array
  */
 function coil_content_settings_taxonomies_validation( $taxonomy_content_settings ) : array {
+
 	return array_map(
 		function( $radio_value ) {
 			$valid_choices = array_keys( Gating\get_monetization_setting_types() );
@@ -233,6 +238,7 @@ function coil_content_settings_taxonomies_validation( $taxonomy_content_settings
  * @return void
  */
 function coil_getting_started_settings_render_callback() {
+
 	?>
 	<h3><?php esc_html_e( 'How-to guides', 'coil-web-monetization' ); ?></h3>
 <ul>
@@ -258,11 +264,13 @@ function coil_getting_started_settings_render_callback() {
 		);
 		?>
 	</ul>
+	
 	<?php
 }
 
 // Render the text field for the payment point in global settings.
 function coil_global_settings_payment_pointer_render_callback() {
+
 	printf(
 		'<input class="%s" type="%s" name="%s" id="%s" value="%s" placeholder="%s" style="%s" />',
 		esc_attr( 'wide-input' ),
@@ -295,6 +303,7 @@ function coil_global_settings_payment_pointer_render_callback() {
  * @return void
  */
 function coil_global_settings_advanced_config_render_callback() {
+
 	printf(
 		'<input class="%s" type="%s" name="%s" id="%s" value="%s" placeholder="%s" style="%s" required="required"/>',
 		esc_attr( 'wide-input' ),
@@ -473,7 +482,11 @@ function coil_messaging_settings_render_callback() {
 	);
 }
 
+/**
+ * Creates dismissable welcome notice on coil admin screen
+ */
 function admin_welcome_notice() {
+
 	$screen = get_current_screen();
 	if ( ! $screen ) {
 		return;
@@ -483,7 +496,6 @@ function admin_welcome_notice() {
 		return;
 	}
 
-	$current_user       = wp_get_current_user();
 	$payment_pointer_id = Admin\get_global_settings( 'coil_payment_pointer_id' );
 	$notice_dismissed   = get_user_meta( $current_user->ID, 'coil-welcome-notice-dismissed', true );
 
@@ -518,25 +530,64 @@ function admin_welcome_notice() {
 }
 
 /**
+ * Admin notice to ensure payment pointer has been set
+ */
+function admin_no_payment_pointer_notice() {
+
+	// Only nag admins that can manage coil settings
+	if ( ! current_user_can( apply_filters( 'coil_settings_capability', 'manage_options' ) ) ) {
+		return;
+	}
+
+	$screen = get_current_screen();
+	if ( ! $screen ) {
+		return;
+	}
+
+	if ( $screen->id !== 'toplevel_page_coil_settings' ) {
+		return;
+	}
+
+	$payment_pointer_id = Admin\get_global_settings( 'coil_payment_pointer_id' );
+
+	if ( $payment_pointer_id ) {
+		return;
+	}
+
+	$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : '';
+
+	if ( $active_tab !== 'global_settings' ) {
+		return;
+	}
+	?>
+
+	<div style="display: none;" class="notice coil-no-payment-pointer-notice">
+		<img width="48" height="48" class="coil-no-payment-pointer-notice__icon" src="<?php echo esc_url( plugins_url( 'assets/images/web-mon-icon.svg', COIL__FILE__ ) ); ?>" alt="<?php esc_attr_e( 'Coil', 'coil-web-monetization' ); ?>" />
+		<div class="coil-no-payment-pointer-notice__content">
+			<h3><?php esc_html_e( 'Warning', 'coil-web-monetization' ); ?></h3>
+			<p><?php esc_html_e( 'You haven\'t entered a payment pointer. A payment pointer is required to receive payments and for content gating to be recognized.', 'coil-web-monetization' ); ?></p>
+		</div>
+	</div>
+	<?php
+}
+
+/**
  * Render the Coil submenu setting screen to display options to gate posts
  * and taxonomy content types.
  *
  * @return void
  */
 
- // Called by the add_menu_page function called inside the register_admin_menu function which is invoked using the admin_menu hook
- // It is executed to display the content on the Coil plugin settings page - as in when you click the Coil tab in the side menu on the WordPress admin page and it takes you to the plugins settings page
+// Called by the add_menu_page function called inside the register_admin_menu function which is invoked using the admin_menu hook
+// It is executed to display the content on the Coil plugin settings page - as in when you click the Coil tab in the side menu on the WordPress admin page and it takes you to the plugins settings page
 function render_coil_settings_screen() : void {
 	// Udemy tutorial said it is good practice to first check appropriate user capability i.e. manage_options
-	?>
-	<div class="plugin-settings"> <!-- Deleted coil and wrap classes here. Wrap is a classname that WordPress typically uses for its admin pages. -->
 
-		<div class="wrap coil plugin-branding"> 
-			<h1>
-			<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32ZM22.2293 20.7672C21.8378 19.841 21.2786 19.623 20.8498 19.623C20.6964 19.623 20.5429 19.6534 20.4465 19.6725C20.4375 19.6743 20.429 19.676 20.421 19.6775C20.2663 19.7435 20.1103 19.8803 19.9176 20.0493C19.3674 20.5319 18.5178 21.277 16.5435 21.3846H16.2266C14.1759 21.3846 12.2744 20.3313 11.305 18.6423C10.8576 17.8433 10.6339 16.9534 10.6339 16.0635C10.6339 15.0283 10.9322 13.975 11.5474 13.067C12.0134 12.3587 12.9269 11.2145 14.5674 10.7242C15.3504 10.4881 16.0401 10.3973 16.6367 10.3973C18.5009 10.3973 19.3584 11.3598 19.3584 12.0681C19.3584 12.4495 19.1161 12.7582 18.65 12.8127C18.5941 12.8309 18.5568 12.8309 18.5009 12.8309C18.3331 12.8309 18.1467 12.7945 17.9976 12.7037C17.9416 12.6674 17.8671 12.6493 17.7925 12.6493C17.2146 12.6493 16.413 13.6299 16.413 14.4653C16.413 15.0828 16.8604 15.6276 18.184 15.6276C18.4049 15.6276 18.6392 15.6016 18.9094 15.5716C18.9584 15.5661 19.0086 15.5606 19.0602 15.555C20.5142 15.3552 21.7633 14.3382 22.1361 13.0125C22.192 12.849 22.248 12.5766 22.248 12.2134C22.248 11.378 21.9124 10.0886 20.2905 8.90811C19.1347 8.05455 17.8111 7.80029 16.618 7.80029C15.3877 7.80029 14.3064 8.07271 13.6912 8.27248C11.2677 9.05339 9.88822 10.4881 9.17981 11.5778C8.26635 12.9398 7.80029 14.5198 7.80029 16.0998C7.80029 17.4619 8.13585 18.8058 8.82561 20.0226C10.2983 22.6014 13.1506 24.1996 16.2266 24.1996C16.3011 24.1996 16.3804 24.195 16.4596 24.1905C16.5388 24.186 16.618 24.1814 16.6926 24.1814C18.7619 24.0725 22.3225 22.6922 22.3225 21.1667C22.3225 21.0396 22.2853 20.8943 22.2293 20.7672Z" fill="black"/>
-</svg>	
-	&nbsp;	<strong class="panel-title"><?php esc_html_e( get_admin_page_title() ); ?> </strong></h1> <!-- Used get_admin_title function to get text from the add_men_page function!! Added icon image, added panel-title as the class?? !! Must still go check CSS -->
+	?>
+	<div class="wrap coil plugin-settings"> <!-- Deleted coil and wrap classes here. Wrap is a classname that WordPress typically uses for its admin pages. -->
+
+		<div class="plugin-branding">
+			<img width="60" height="25" class="coil-logo" src="<?php echo esc_url( plugins_url( 'assets/images/coil-logo.svg', COIL__FILE__ ) ); ?>" alt="<?php esc_attr_e( 'Coil', 'coil-web-monetization' ); ?>" />
 		</div>
 
 		<?php settings_errors(); ?>
@@ -546,11 +597,11 @@ function render_coil_settings_screen() : void {
 		?>
 
 		<h2 class="nav-tab-wrapper">
-			<a href="<?php echo esc_url( '?page=coil_settings&tab=getting_started' ); ?>" class="nav-tab <?php echo $active_tab === 'getting_started' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Getting Started', 'coil-web-monetization' ); ?></a>
-			<a href="<?php echo esc_url( '?page=coil_settings&tab=global_settings' ); ?>" class="nav-tab <?php echo $active_tab === 'global_settings' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Global Settings', 'coil-web-monetization' ); ?></a>
-			<a href="<?php echo esc_url( '?page=coil_settings&tab=content_settings' ); ?>" class="nav-tab <?php echo $active_tab === 'content_settings' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Content Settings', 'coil-web-monetization' ); ?></a>
-			<a href="<?php echo esc_url( '?page=coil_settings&tab=excerpt_settings' ); ?>" class="nav-tab <?php echo $active_tab === 'excerpt_settings' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Excerpt Settings', 'coil-web-monetization' ); ?></a>
-			<a href="<?php echo esc_url( '?page=coil_settings&tab=messaging_settings' ); ?>" class="nav-tab <?php echo $active_tab === 'messaging_settings' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Messaging Settings', 'coil-web-monetization' ); ?></a>
+			<a href="<?php echo esc_url( '?page=coil_settings&tab=getting_started' ); ?>" id="coil-getting-started" class="nav-tab <?php echo $active_tab === 'getting_started' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Getting Started', 'coil-web-monetization' ); ?></a>
+			<a href="<?php echo esc_url( '?page=coil_settings&tab=global_settings' ); ?>" id="coil-global-settings" class="nav-tab <?php echo $active_tab === 'global_settings' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Global Settings', 'coil-web-monetization' ); ?></a>
+			<a href="<?php echo esc_url( '?page=coil_settings&tab=content_settings' ); ?>" id="coil-content-settings" class="nav-tab <?php echo $active_tab === 'content_settings' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Content Settings', 'coil-web-monetization' ); ?></a>
+			<a href="<?php echo esc_url( '?page=coil_settings&tab=excerpt_settings' ); ?>" id="coil-excerpt-settings" class="nav-tab <?php echo $active_tab === 'excerpt_settings' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Excerpt Settings', 'coil-web-monetization' ); ?></a>
+			<a href="<?php echo esc_url( '?page=coil_settings&tab=messaging_settings' ); ?>" id="coil-messaging-settings" class="nav-tab <?php echo $active_tab === 'messaging_settings' ? esc_attr( 'nav-tab-active' ) : ''; ?>"><?php esc_html_e( 'Messaging Settings', 'coil-web-monetization' ); ?></a>
 		</h2>
 
 		<form action="options.php" method="post">
@@ -609,7 +660,7 @@ function coil_add_term_custom_meta( $term ) {
 			<label><?php esc_html_e( 'Coil Web Monetization', 'coil-web-monetization' ); ?></label>
 		</th>
 		<td>
-			<fieldset>
+			<fieldset id="coil-category-settings">
 			<?php
 			foreach ( $gating_options as $setting_key => $setting_value ) {
 
@@ -659,7 +710,7 @@ function coil_edit_term_custom_meta() {
 	?>
 	<div class="form-field">
 		<h2><?php esc_html_e( 'Coil Web Monetization', 'coil-web-monetization' ); ?></h2>
-		<fieldset>
+		<fieldset id="coil-category-settings">
 		<?php
 		foreach ( $gating_options as $setting_key => $setting_value ) {
 			$checked_input = false;
@@ -691,6 +742,7 @@ function coil_edit_term_custom_meta() {
 }
 
 function dismiss_welcome_notice() {
+
 	$current_user = wp_get_current_user();
 
 	// Bail early - no user set (somehow).
